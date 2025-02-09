@@ -12,7 +12,8 @@
 			<Button
 				class="text-md font-bold text-sky-400"
 				variant="link"
-				href="https://www.liveatc.net">LiveATC.net</Button
+				href="https://www.liveatc.net/topfeeds.php"
+				target="_blank">LiveATC.net</Button
 			>
 		</a>
 

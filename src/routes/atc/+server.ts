@@ -1,6 +1,7 @@
-import type { PageServerLoad } from "./$types";
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
 
-export const load = (async (event) => {
+export const GET: RequestHandler = async (event) => {
 	const url = event.url;
 	const search = url.search;
 	try {
@@ -9,15 +10,15 @@ export const load = (async (event) => {
 		);
 		const text = await response.text();
 
-		return {
+		return json({
 			html: text,
 			error: false,
-		};
+		});
 	} catch (error: any) {
-		return {
+		return json({
 			html: "",
 			message: error.toString(),
 			error: true,
-		};
+		});
 	}
-}) satisfies PageServerLoad;
+};
