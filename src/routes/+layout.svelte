@@ -11,7 +11,8 @@
 	<title>ClearTower</title>
 
 	<meta name="description" content="ClearTower" />
-	<link rel="shortcut icon" href="fav.svg" type="image/svg+xml" />
+	<link rel="shortcut icon" href="icon.png" type="image/png" />
+	<link rel="manifest" href="manifest.json" />
 	<meta
 		name="description"
 		content="ClearTower is a clean UI for ATC audio streams from LiveATC.net"

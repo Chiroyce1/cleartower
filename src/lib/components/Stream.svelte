@@ -17,7 +17,7 @@
 	}, 1000);
 
 	const track = $state({
-		albumArt: "/favicon.png",
+		albumArt: "/icon.png",
 		album: "Album",
 		artist: "Artist",
 		title: "Title",

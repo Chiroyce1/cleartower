@@ -5,7 +5,9 @@
 
 <div class="w-full flex flex-row items-center justify-between pt-2">
 	<h1 class="text-xl font-extrabold lg:text-3xl ml-1 lg:ml-3">
-		<a href="/" class="text-theme gradient">ClearTower 🛩️</a>
+		<a href="/" class="text-theme gradient flex items-center gap-2"
+			><img src="/icon.png" class="h-8" alt="icon" />ClearTower
+		</a>
 	</h1>
 	<div class="self-end flex gap-2">
 		<a href="/history" class="text-sm" title="history">

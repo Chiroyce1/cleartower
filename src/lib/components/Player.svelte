@@ -12,7 +12,7 @@
 	} from "lucide-svelte";
 
 	const track = {
-		albumArt: "/favicon.png",
+		albumArt: "/icon.png",
 		album: "Album",
 		artist: "Artist",
 		title: "Title",
