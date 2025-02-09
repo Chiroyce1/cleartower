@@ -114,4 +114,8 @@ export const flags = {
 	"Hong Kong": "🇭🇰",
 	"Costa Rica": "🇨🇷",
 	Chile: "🇨🇱",
+	Ireland: "🇮🇪",
+	Malaysia: "🇲🇾",
+	Hungary: "🇭🇺",
+	Singapore: "🇸🇬",
 };
