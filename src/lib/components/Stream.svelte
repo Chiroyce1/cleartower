@@ -77,7 +77,14 @@
 			{/if}
 		</button>
 		<div class="flex-1">
-			<h2 class="text-primary text-lg font-extrabold">{atc.feedDescription}</h2>
+			<h2 class="text-primary text-lg font-extrabold flex gap-2 items-center">
+				<div
+					class="w-5 h-5 bg-green-500 rounded-full animate-ping absolute custom-ping shadow-md"
+				></div>
+				<div class="w-5 h-5 bg-green-500 rounded-full"></div>
+
+				{atc.feedDescription}
+			</h2>
 			<p class="text-primary text-sm font-light">{atc.city}, {atc.country}</p>
 		</div>
 		<div class="flex items-center gap-2">
@@ -126,3 +133,16 @@
 		<span>{formatTime(track.duration)}</span>
 	</div>
 </div>
+
+<style>
+	@keyframes custom-ping {
+		75%,
+		100% {
+			transform: scale(2);
+			opacity: 0;
+		}
+	}
+	.custom-ping {
+		animation: custom-ping 2s infinite;
+	}
+</style>
