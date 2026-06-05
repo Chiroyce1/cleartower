@@ -1,21 +1,13 @@
-import type { PageServerLoad } from "./atc/$types";
+import { ATC_FEEDS } from "$lib/feeds";
+import type { PageServerLoad } from "./$types";
 
-export const load = (async (event) => {
-	const url = event.url;
-	const search = url.search;
-	try {
-		const response = await fetch(`https://www.liveatc.net/topfeeds.php`);
-		const text = await response.text();
+const PRESETS = ["KJFK", "KLAX", "KSFO"];
 
-		return {
-			html: text,
-			error: false,
-		};
-	} catch (error: any) {
-		return {
-			html: "",
-			message: error.toString(),
-			error: true,
-		};
-	}
+export const load = (() => {
+	return {
+		presets: PRESETS.map((icao) => ({
+			icao,
+			feeds: ATC_FEEDS[icao] ?? [],
+		})),
+	};
 }) satisfies PageServerLoad;

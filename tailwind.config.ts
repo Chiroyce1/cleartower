@@ -61,13 +61,15 @@ const config: Config = {
         		},
 			},
 			borderRadius: {
-				xl: "calc(var(--radius) + 4px)",
-				lg: "var(--radius)",
-				md: "calc(var(--radius) - 2px)",
-				sm: "calc(var(--radius) - 4px)"
+				xl: "0px",
+				lg: "0px",
+				md: "0px",
+				sm: "0px",
+				full: "9999px",
 			},
 			fontFamily: {
-				sans: [...fontFamily.sans]
+				sans: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+				mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
 			},
 			keyframes: {
 				"accordion-down": {

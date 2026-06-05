@@ -1,148 +1,103 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import { Play, Pause, Volume2 } from "lucide-svelte";
-	import type { TableRow } from "$lib/utils";
-	let props = $props();
+	import { onMount, onDestroy } from "svelte";
+	import { Play, Pause, X } from "lucide-svelte";
+	import type { AtcFeed } from "$lib/feeds";
+	import Waveform from "./Waveform.svelte";
 
-	let atc: TableRow = props.atc;
+	let { feed, onclose }: { feed: AtcFeed; onclose?: () => void } = $props();
 
-	let audio: HTMLAudioElement | null = $state(null);
-	let currentTime = $state(0);
-	let audioSrc = $state("");
-
-	setInterval(() => {
-		if (audio) {
-			currentTime = document.querySelector("audio")?.currentTime || 0;
-		}
-	}, 1000);
-
-	const track = $state({
-		albumArt: "/icon.png",
-		album: "Album",
-		artist: "Artist",
-		title: "Title",
-		duration: 20,
-	});
-
-	setInterval(() => {
-		track.duration = track.duration + 10;
-	}, 10_000);
-
+	let audioEl = $state<HTMLAudioElement | null>(null);
 	let isPlaying = $state(false);
-
-	const formatTime = (seconds: number) => {
-		const minutes = Math.floor(seconds / 60);
-		const remainingSeconds = Math.floor(seconds % 60);
-		return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-	};
+	let hasError = $state(false);
+	let elapsed = $state(0);
+	let elapsedTimer: ReturnType<typeof setInterval>;
 
 	$effect(() => {
-		const audio = document.querySelector("audio");
-		if (!audio) return;
+		if (!audioEl) return;
 		if (isPlaying) {
-			audio.play();
+			audioEl.play().catch(() => {
+				hasError = true;
+				isPlaying = false;
+			});
 		} else {
-			audio.pause();
+			audioEl.pause();
 		}
 	});
 
-	onMount(async () => {
-		console.log(atc);
-		const res = await fetch(`/atc?mount=${atc.atc}&icao=${atc.icao}`);
-		const json = await res.json();
-		const html = json.html;
+	function toggle() {
+		if (!isPlaying) elapsed = 0;
+		isPlaying = !isPlaying;
+		hasError = false;
+	}
 
-		// domparse `data.html`
-		const parser = new DOMParser();
-		const doc = parser.parseFromString(html, "text/html");
-		audioSrc = doc.querySelector("audio")?.getAttribute("src") || "";
-		audio = document.querySelector("audio");
-		console.log(audioSrc);
+	onMount(() => {
+		audioEl = document.getElementById("atc-player") as HTMLAudioElement;
+		elapsedTimer = setInterval(() => {
+			if (isPlaying) elapsed++;
+		}, 1000);
+	});
+	onDestroy(() => {
+		clearInterval(elapsedTimer);
+		audioEl?.pause();
 	});
 </script>
 
-<audio src={audioSrc}></audio>
-<div class="w-full mx-auto p-6 rounded-xl bg-secondary my-8">
-	<div class="flex space-x-4 mb-6 items-center">
-		<button
-			class="w-16 h-16 rounded-full bg-primary text-secondary flex items-center justify-center"
-			onclick={() => {
-				isPlaying = !isPlaying;
-			}}
-		>
-			{#if isPlaying}
-				<Pause class="w-6 h-6" />
-			{:else}
-				<Play class="w-6 h-6" />
-			{/if}
-		</button>
-		<div class="flex-1">
-			<h2 class="text-primary text-lg font-extrabold flex gap-2 items-center">
-				<div
-					class="w-5 h-5 bg-green-500 rounded-full animate-ping absolute custom-ping shadow-md"
-				></div>
-				<div class="w-5 h-5 bg-green-500 rounded-full"></div>
+<audio id="atc-player" src={feed.streamUrl} crossorigin="anonymous"></audio>
 
-				{atc.feedDescription}
-			</h2>
-			<p class="text-primary text-sm font-light">{atc.city}, {atc.country}</p>
-		</div>
-		<div class="flex items-center gap-2">
-			<Volume2 class="w-6 h-6 text-primary" />
-			<input
-				type="range"
-				min="0"
-				max="1"
-				step="0.01"
-				value={1}
-				class="w-32 h-1 bg-primary rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
-				oninput={(e) => {
-					if (audio) {
-						// @ts-ignore
-						audio.volume = parseFloat(e.target.value);
-					}
-				}}
-			/>
-		</div>
-	</div>
-
-	<div
-		class="relative h-1 bg-primary rounded-full mb-4 cursor-not-allowed"
-		title="Live Stream cannot be seeked"
+<div class="flex items-center gap-2 sm:gap-3 py-3 px-1 h-[70px]">
+	<!-- Play/pause -->
+	<button
+		onclick={toggle}
+		class="shrink-0 w-9 h-9 flex items-center justify-center rounded-md border transition-colors
+			{isPlaying
+			? 'bg-yellow-400 border-yellow-400 text-black'
+			: 'border-foreground/15 text-foreground/70 hover:border-yellow-400/50 hover:text-yellow-400'}"
+		aria-label={isPlaying ? "Pause" : "Play"}
 	>
-		{#if audio}
-			<div
-				class="absolute h-full bg-sky-600 rounded-full"
-				style={`width: ${((currentTime || 0) / track.duration) * 100}%`}
-			></div>
-		{/if}
-	</div>
-
-	<div class="flex justify-between text-primary text-sm mb-6">
-		{#if audio}
-			{#if currentTime > 1}
-				<span>{formatTime(currentTime)}</span>
-			{:else if isPlaying}
-				<span>Connecting ATC...</span>
-			{:else}
-				<span>Press play</span>
-			{/if}
+		{#if isPlaying}
+			<Pause class="w-4 h-4" />
 		{:else}
-			<span>Loading...</span>
+			<Play class="w-4 h-4 translate-x-px" />
 		{/if}
-		<span>{formatTime(track.duration)}</span>
-	</div>
-</div>
+	</button>
 
-<style>
-	@keyframes custom-ping {
-		75%,
-		100% {
-			transform: scale(2);
-			opacity: 0;
-		}
-	}
-	.custom-ping {
-		animation: custom-ping 2s infinite;
-	}
-</style>
+	<!-- Feed info -->
+	<div class="flex flex-col min-w-0 w-28 xs:w-36 sm:w-44 shrink-0">
+		<div class="flex items-center gap-1.5 min-w-0">
+			{#if isPlaying}
+				<span class="relative flex h-1.5 w-1.5 shrink-0">
+					<span
+						class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"
+					></span>
+					<span
+						class="relative inline-flex rounded-full h-1.5 w-1.5 bg-yellow-400"
+					></span>
+				</span>
+			{/if}
+			<span class="text-xs sm:text-sm font-medium truncate"
+				>{feed.name}</span
+			>
+		</div>
+		<span class="text-[10px] sm:text-[11px] text-foreground/50 font-mono">
+			{feed.icao} · {feed.frequency}
+		</span>
+		{#if hasError}
+			<span class="text-[10px] sm:text-[11px] text-red-400"
+				>stream unavailable</span
+			>
+		{/if}
+	</div>
+
+	<!-- Waveform fills remaining space -->
+	<div class="flex-1 h-11 min-w-0">
+		<Waveform audioElement={audioEl} active={isPlaying} />
+	</div>
+
+	<button
+		onclick={onclose}
+		class="shrink-0 text-foreground/25 hover:text-foreground/70 transition-colors ml-1"
+		aria-label="Close player"
+	>
+		<X class="w-4 h-4" />
+	</button>
+</div>

@@ -1,24 +1,47 @@
 <script lang="ts">
-	import Theme from "./Theme.svelte";
-	import { Button } from "./ui/button";
+	import { Radio, Sun, Moon, Github, GithubIcon } from "lucide-svelte";
+	import { theme } from "$lib/theme";
+
+	let isDark = $state(theme.current === "dark");
+
+	function toggleTheme() {
+		theme.toggle();
+		isDark = theme.current === "dark";
+	}
 </script>
 
-<div class="w-full flex flex-row items-center justify-between pt-2">
-	<h1 class="text-xl font-extrabold lg:text-3xl ml-1 lg:ml-3">
-		<a href="/" class="text-theme gradient flex items-center gap-2"
-			><img src="/icon.png" class="h-8" alt="icon" />ClearTower
-		</a>
-	</h1>
-	<div class="self-end flex gap-2">
-		<a href="/history" class="text-sm" title="history">
-			<Button
-				class="text-md font-bold text-sky-400"
-				variant="link"
-				href="https://www.liveatc.net/topfeeds.php"
-				target="_blank">LiveATC.net</Button
-			>
-		</a>
-
-		<span class="sm:ml-2"><Theme /></span>
+<nav
+	class="flex items-center justify-between py-4 border-b border-black/10 dark:border-white/8"
+>
+	<a href="/" class="flex items-center gap-1 group">
+		<Radio class="w-6 h-6 text-yellow-400" />
+		<span class="font-semibold text-xl tracking-tight">
+			C<span class="text-yellow-400">T</span>
+		</span>
+	</a>
+	<div class="flex items-center gap-3">
+		<span class="text-[11px] font-mono text-foreground/60"
+			><a href="https://liveatc.net/" target="_blank">
+				<b class="hover:underline">liveatc.net</b></a
+			></span
+		>
+		⋅
+		<span class="text-[11px] font-mono text-foreground/60"
+			><a href="https://github.com/chiroyce1/cleartower" target="_blank">
+				<b class="hover:underline">github</b></a
+			></span
+		>
+		⋅
+		<button
+			onclick={toggleTheme}
+			class="text-foreground/60 hover:text-foreground/80 transition-colors"
+			aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+		>
+			{#if isDark}
+				<Sun class="w-4 h-4" />
+			{:else}
+				<Moon class="w-4 h-4" />
+			{/if}
+		</button>
 	</div>
-</div>
+</nav>

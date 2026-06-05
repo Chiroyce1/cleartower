@@ -1,19 +1,24 @@
 {
 	"name": "ClearTower",
 	"short_name": "ClearTower",
-	"description": "ClearTower is a clean UI for ATC audio streams from LiveATC.net",
+	"description": "ClearTower is a minimal UI for ATC audio streams from LiveATC.net",
 	"start_url": "/",
 	"display": "standalone",
-	"background_color": "#ffffff",
-	"theme_color": "#2464ce",
+	"background_color": "#0a0a0a",
+	"theme_color": "#facc15",
 	"icons": [
 		{
-			"src": "icon.png",
-			"sizes": "512x512",
-			"type": "image/png"
+			"src": "icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
 		}
 	],
 	"scope": "/",
 	"orientation": "portrait-primary",
-	"categories": ["utilities", "aviation", "audio"]
+	"categories": [
+		"utilities",
+		"aviation",
+		"audio"
+	]
 }
